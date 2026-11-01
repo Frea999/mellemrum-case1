@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
+import PageHeading from "../components/PageHeading";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const headers = {
@@ -45,7 +46,7 @@ export default function EventPage() {
           <img src={event.image} alt="" />
           <div className="event-detail-content">
             <p className="event-category">{event.category}</p>
-            <h1>{event.title}</h1>
+            <PageHeading title={event.title} />
             <p className="lead">{event.summary}</p>
             <div className="detail-list">
               <p>
@@ -83,19 +84,29 @@ export default function EventPage() {
             <p>Udfyld formularen, så sender vi din tilmelding til arrangøren.</p>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <label>
-              Navn
-              <input value={name} onChange={(inputEvent) => setName(inputEvent.target.value)} />
-            </label>
-            <span>E-mail</span>
-            <input
-              value={email}
-              onChange={(inputEvent) => setEmail(inputEvent.target.value)}
-              placeholder="dig@example.com"
-            />
-            <button type="submit">Tilmeld mig</button>
-          </form>
+<form onSubmit={handleSubmit}>
+  <label>
+    Navn
+    <input
+      value={name}
+      onChange={(inputEvent) => setName(inputEvent.target.value)}
+      autoComplete="name"
+      required
+    />
+  </label>
+  <label>
+    E-mail
+    <input
+      type="email"
+      value={email}
+      onChange={(inputEvent) => setEmail(inputEvent.target.value)}
+      placeholder="dig@example.com"
+      autoComplete="email"
+      required
+    />
+  </label>
+  <button type="submit">Tilmeld mig</button>
+</form>
         </section>
       </main>
       <footer className="site-footer">
