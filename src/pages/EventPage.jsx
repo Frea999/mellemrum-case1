@@ -5,7 +5,7 @@ import PageHeading from "../components/PageHeading";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const headers = {
   apikey: import.meta.env.VITE_SUPABASE_APIKEY,
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
 };
 
 export default function EventPage() {
@@ -14,12 +14,29 @@ export default function EventPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function getEvent() {
-      const response = await fetch(`${SUPABASE_URL}/events?id=eq.${eventId}`, { headers });
-      const data = await response.json();
-      setEvent(data[0]);
+      try {
+        const response = await fetch(
+          `${SUPABASE_URL}/events?id=eq.${eventId}`,
+          { headers },
+        );
+
+        if (!response.ok) {
+          throw new Error(`Kunne ikke hente event: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setEvent(data[0]);
+      } catch (error) {
+        console.error(error);
+        setError("Vi kunne ikke hente eventet. Prøv igen om lidt.");
+      } finally {
+        setIsLoading(false);
+      }
     }
 
     getEvent();
@@ -33,7 +50,7 @@ export default function EventPage() {
       const response = await fetch(`${SUPABASE_URL}/registrations`, {
         method: "POST",
         headers,
-        body: JSON.stringify({ name, email, eventId: event.id })
+        body: JSON.stringify({ name, email, eventId: event.id }),
       });
 
       if (!response.ok) {
@@ -49,8 +66,32 @@ export default function EventPage() {
     }
   }
 
+  if (isLoading) {
+    return (
+      <main className="event-page">
+        <p role="status">Henter event…</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="event-page">
+        <PageHeading title="Noget gik galt" />
+        <p role="alert">{error}</p>
+        <Link to="/">← Se alle events</Link>
+      </main>
+    );
+  }
+
   if (!event) {
-    return null;
+    return (
+      <main className="event-page">
+        <PageHeading title="Eventet findes ikke" />
+        <p>Det event, du leder efter, findes ikke eller er blevet fjernet.</p>
+        <Link to="/">← Se alle events</Link>
+      </main>
+    );
   }
 
   const date = new Date(event.date);
@@ -71,15 +112,24 @@ export default function EventPage() {
             <div className="detail-list">
               <p>
                 <strong>Dato</strong>
-                {date.toLocaleDateString("da-DK", { weekday: "long", day: "numeric", month: "long" })} kl.{" "}
-                {date.toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit" })}
+                {date.toLocaleDateString("da-DK", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                })}{" "}
+                kl.{" "}
+                {date.toLocaleTimeString("da-DK", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
               <p>
                 <strong>Sted</strong>
                 <span>
                   {event.venueName}
                   <br />
-                  {event.venueAddress}, {event.venuePostalCode} {event.venueCity}
+                  {event.venueAddress}, {event.venuePostalCode}{" "}
+                  {event.venueCity}
                   {event.venueWebsite && (
                     <>
                       <br />
@@ -101,33 +151,35 @@ export default function EventPage() {
           <div>
             <p className="eyebrow dark">Tilmelding</p>
             <h2>Reserver din plads</h2>
-            <p>Udfyld formularen, så sender vi din tilmelding til arrangøren.</p>
+            <p>
+              Udfyld formularen, så sender vi din tilmelding til arrangøren.
+            </p>
           </div>
 
-<form onSubmit={handleSubmit}>
-  <label>
-    Navn
-    <input
-      value={name}
-      onChange={(inputEvent) => setName(inputEvent.target.value)}
-      autoComplete="name"
-      required
-    />
-  </label>
-  <label>
-    E-mail
-    <input
-      type="email"
-      value={email}
-      onChange={(inputEvent) => setEmail(inputEvent.target.value)}
-      placeholder="dig@example.com"
-      autoComplete="email"
-      required
-    />
-  </label>
-  <button type="submit">Tilmeld mig</button>
-              <p role="status">{message}</p>
-</form>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Navn
+              <input
+                value={name}
+                onChange={(inputEvent) => setName(inputEvent.target.value)}
+                autoComplete="name"
+                required
+              />
+            </label>
+            <label>
+              E-mail
+              <input
+                type="email"
+                value={email}
+                onChange={(inputEvent) => setEmail(inputEvent.target.value)}
+                placeholder="dig@example.com"
+                autoComplete="email"
+                required
+              />
+            </label>
+            <button type="submit">Tilmeld mig</button>
+            <p role="status">{message}</p>
+          </form>
         </section>
       </main>
       <footer className="site-footer">
