@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import PageHeading from "../components/PageHeading";
 
 export default function AboutPage() {
   return (
@@ -6,7 +7,7 @@ export default function AboutPage() {
       <header className="page-header about-header">
         <div className="about-header-content">
           <p className="eyebrow">Om Mellemrum</p>
-          <h1>Vi skaber mellemrum i kalenderen.</h1>
+          <PageHeading title="Vi skaber mellemrum i kalenderen." />
           <p>Udvalgte kulturoplevelser og nye perspektiver på Aarhus.</p>
         </div>
       </header>

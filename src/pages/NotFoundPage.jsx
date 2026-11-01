@@ -1,10 +1,11 @@
 import { Link } from "react-router";
+import PageHeading from "../components/PageHeading";
 
 export default function NotFoundPage() {
   return (
     <>
       <header>
-        <h1 className="not-found-title">404</h1>
+        <PageHeading title="404" className="not-found-title" />
       </header>
       <main className="not-found">
         <p>Siden, du leder efter, findes ikke.</p>

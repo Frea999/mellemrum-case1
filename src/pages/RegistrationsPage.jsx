@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import PageHeading from "../components/PageHeading";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const headers = {
@@ -26,7 +27,7 @@ export default function RegistrationsPage() {
     <>
       <header className="admin-header">
         <p className="eyebrow">Internt overblik</p>
-        <h1>Tilmeldinger</h1>
+        <PageHeading title="Tilmeldinger" />
         <p>{registrationCount} tilmeldinger i alt</p>
       </header>
       <main>
