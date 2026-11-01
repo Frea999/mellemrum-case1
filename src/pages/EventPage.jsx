@@ -13,6 +13,7 @@ export default function EventPage() {
   const [event, setEvent] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     async function getEvent() {
@@ -26,7 +27,26 @@ export default function EventPage() {
 
   async function handleSubmit(eventSubmit) {
     eventSubmit.preventDefault();
-    console.log({ name, email, event: event.title });
+    setMessage("");
+
+    try {
+      const response = await fetch(`${SUPABASE_URL}/registrations`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ name, email, eventId: event.id })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Tilmelding fejlede: ${response.status}`);
+      }
+
+      setName("");
+      setEmail("");
+      setMessage(`Tak! Du er tilmeldt ${event.title}.`);
+    } catch (error) {
+      console.error(error);
+      setMessage("Vi kunne ikke gemme din tilmelding. Prøv igen om lidt.");
+    }
   }
 
   if (!event) {
@@ -106,6 +126,7 @@ export default function EventPage() {
     />
   </label>
   <button type="submit">Tilmeld mig</button>
+              <p role="status">{message}</p>
 </form>
         </section>
       </main>
